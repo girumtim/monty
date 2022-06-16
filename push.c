@@ -1,44 +1,114 @@
 #include "monty.h"
-#include <string.h>
-/**
-*push - add a neode in the list
-*@stack: pointer to a pointer to the doubly linked list
-*@line_number: line where there is an error
-*Return: nothing
-*/
-void push(stack_t **stack, char *n, unsigned int line_number)
-{
-	stack_t *new = NULL;
-	int i;
 
-	new = malloc(sizeof(stack_t));
-	if (new == NULL)
+/**
+ * _push -  pushes an element to the stack
+ * @stack: double pointer to header (top) of the stack
+ * @line_number: counter for line number of the file
+ *
+ * Return: void
+ */
+void _push(stack_t **stack, unsigned int line_number)
+{
+	size_t len = 0, i = 0;
+	char arg[128] = "";
+	char *argument = arg;
+
+	argument = strtok(NULL, " \t\r\n\v\f");
+
+	if (argument == NULL)
 	{
-		fprintf(stderr, "Error: malloc failed\n");
+		dprintf(STDERR_FILENO, "L%u: usage: push integer\n", line_number);
+		free_stack_t(*stack);
+
 		exit(EXIT_FAILURE);
 	}
-	if (n == NULL)
-	{
-		fprintf(stderr, "L%d: usage: push integer\n", line_number);
-		exit(EXIT_FAILURE);
-	}
-	for (i = 0; n[i]; i++)
-	{
-		if (n[0] == '-' && i == 0)
-			continue;
-		if (n[i] < 48 || n[i] > 57)
+
+	len = strlen(argument);
+	for (i = 0; i < len; i++)
+		if (!isdigit(argument[i]) && argument[0] != '-')
 		{
-			fprintf(stderr, "L%d: usage: push integer\n", line_number);
+			dprintf(STDERR_FILENO, "L%u: usage: push integer\n", line_number);
+			free_stack_t(*stack);
+
 			exit(EXIT_FAILURE);
 		}
-	}
-	new->n = atoi(n);
-	new->prev = NULL;
-	new->next = NULL;
-	if (*stack != NULL)
+
+	if (stack_queue == 's')
+		add_node(stack, atoi(argument));
+
+	if (stack_queue == 'q')
+		add_node_queue(stack, atoi(argument));
+}
+
+
+/**
+ * add_node -  pushes an element to the stack
+ * @stack: double pointer to header (top) of the stack
+ * @argument: integer push
+ *
+ * Return: void
+ */
+void add_node(stack_t **stack, int argument)
+{
+	stack_t *new_node = NULL;
+
+	new_node = malloc(sizeof(stack_t));
+	if (new_node == NULL)
 	{
-		new->next = *stack;
-		(*stack)->prev = new;
+		dprintf(STDERR_FILENO, "Error: malloc failed\n");
+		free_stack_t(*stack);
+
+		exit(EXIT_FAILURE);
 	}
-	*stack = new;
+
+	new_node->n = argument;
+	new_node->prev = NULL;
+	new_node->next = NULL;
+
+	if (*stack == NULL)
+		*stack = new_node;
+	else
+	{
+		new_node->next = *stack;
+		(*stack)->prev = new_node;
+		*stack = new_node;
+	}
+}
+
+
+/**
+ * add_node_queue -  pushes an element to the stack
+ * @stack: double pointer to header (top) of the stack
+ * @argument: integer push
+ *
+ * Return: void
+ */
+void add_node_queue(stack_t **stack, int argument)
+{
+	stack_t *new_node = NULL, *last = NULL;
+
+	new_node = malloc(sizeof(stack_t));
+	if (new_node == NULL)
+	{
+		dprintf(STDERR_FILENO, "Error: malloc failed\n");
+		free_stack_t(*stack);
+
+		exit(EXIT_FAILURE);
+	}
+
+	new_node->n = argument;
+	new_node->prev = NULL;
+	new_node->next = NULL;
+
+	if (*stack == NULL)
+		*stack = new_node;
+	else
+	{
+		last = *stack;
+		while (last->next != NULL)
+			last = last->next;
+		new_node->next = NULL;
+		new_node->prev = last;
+		last->next = new_node;
+	}
 }

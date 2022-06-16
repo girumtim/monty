@@ -1,16 +1,24 @@
 #include "monty.h"
+
 /**
-*pint - print the data at the top
-*@stack: double pointer th the head
-*@line_number: number of lines
-*Return: nothing
-*/
-void pint(stack_t **stack, unsigned int __attribute__((unused)) line_number)
+ * _pint - prints the value at the top of the stack
+ * @stack: double pointer to header (top) of the stack
+ * @line_number: counter for line number of the file
+ * Author: Excel Nwachukwu
+ *
+ * Return: void
+ */
+void _pint(stack_t **stack, unsigned int line_number)
 {
-if (stack == NULL || *stack == NULL)
-{
-fprintf(stderr, "L%d: can't pint, stack empty\n", line_number);
-exit(EXIT_FAILURE);
-}
-printf("%d\n", (*stack)->n);
+	stack_t *current = *stack;
+
+	if (*stack == NULL)
+	{
+		dprintf(STDERR_FILENO, "L%d: can't pint, stack empty\n", line_number);
+		free_stack_t(*stack);
+
+		exit(EXIT_FAILURE);
+	}
+
+	printf("%d\n", current->n);
 }
