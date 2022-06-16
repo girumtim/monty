@@ -29,3 +29,4 @@ void _swap(stack_t **stack, unsigned int line_number)
 	(*stack)->next = temp;
 	temp->prev = *stack;
 }
+

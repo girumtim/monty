@@ -40,3 +40,4 @@ void _sub(stack_t **head, unsigned int line_number)
 	free(current);
 	current->prev = NULL;
 }
+
